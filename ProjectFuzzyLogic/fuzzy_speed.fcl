@@ -1,0 +1,102 @@
+FUNCTION_BLOCK
+
+VAR_INPUT
+road : REAL;
+weight : REAL;
+visibility : REAL;
+END_VAR
+
+VAR_OUTPUT
+speed : REAL;
+END_VAR
+
+FUZZIFY visibility
+TERM veryPoor := (0, 1) (10, 1) (15, 0.50) (20, 0);
+TERM poor := (10, 0) (15, 0.50) (20, 1) (30, 1) (35, 0.50) (40, 0);
+TERM average := (30, 0) (35, 0.50) (40, 1) (60, 1) (70, 0.5) (80, 0) ;
+TERM good := (60, 0) (70, 0.50) (80, 1) (100, 1);
+END_FUZZIFY
+
+FUZZIFY road
+TERM veryWinding := (0, 1) (10, 1) (20, 0.50) (30, 0);
+TERM winding := (10, 0) (20, 0.50) (30, 1) (50, 1) (60, 0.50) (70, 0);
+TERM straight := (50, 0) (60, 0.50) (70, 1) (100, 1) ;
+END_FUZZIFY
+
+FUZZIFY weight
+TERM small := (0.1, 1) (1, 1) (1.5, 0.50) (2, 0);
+TERM normal := (1, 0) (1.5, 0.50) (2, 1) (10, 1) (17.5, 0.50) (25, 0);
+TERM big := (20, 0) (25, 0.50) (30, 1) (60, 1);
+END_FUZZIFY
+
+
+
+DEFUZZIFY speed
+TERM slow := (0, 1) (30, 1) (40, 0.50) (50, 0) (70, 0);
+TERM normal := (30, 0) (40, 0.50) (50, 1) (80, 1) (90, 0.50) (100, 0);
+TERM fast := (80, 0) (90, 0) (100, 0.50) (110, 1) (170, 1);
+METHOD : COG;
+DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK first
+AND: MIN;
+ACT: MIN;
+
+RULE 0: IF road IS veryWinding AND visibility IS veryPoor THEN speed IS slow;
+RULE 1: IF road IS winding AND visibility IS veryPoor THEN speed IS slow;
+RULE 2: IF road IS straight AND visibility IS veryPoor THEN speed IS slow;
+
+RULE 4: IF road IS veryWinding AND visibility IS poor THEN speed IS slow;
+RULE 5: IF road IS winding AND visibility IS poor THEN speed IS normal;
+RULE 6: IF road IS straight AND visibility IS poor THEN speed IS normal;
+
+RULE 8: IF road IS veryWinding AND visibility IS average THEN speed IS normal;
+RULE 9: IF road IS winding AND visibility IS average THEN speed IS normal;
+RULE 10: IF road IS straight AND visibility IS average THEN speed IS fast;
+
+RULE 12: IF road IS veryWinding AND visibility IS good THEN speed IS normal;
+RULE 13: IF road IS winding AND visibility IS good THEN speed IS fast;
+RULE 14: IF road IS straight AND visibility IS good THEN speed IS fast;
+
+
+RULE 15: IF road IS veryWinding AND weight IS small THEN speed IS normal;
+RULE 16: IF road IS winding AND weight IS small THEN speed IS normal;
+RULE 17: IF road IS straight AND weight IS small THEN speed IS fast;
+
+RULE 18: IF road IS veryWinding AND weight IS normal THEN speed IS slow;
+RULE 19: IF road IS winding AND weight IS normal THEN speed IS normal;
+RULE 20: IF road IS straight AND weight IS normal THEN speed IS fast;
+
+RULE 21: IF road IS veryWinding AND weight IS big THEN speed IS slow;
+RULE 22: IF road IS winding AND weight IS big THEN speed IS slow;
+RULE 23: IF road IS straight AND weight IS big THEN speed IS normal;
+
+
+RULE 24: IF weight IS small AND visibility IS veryPoor THEN speed IS slow;
+RULE 25: IF weight IS normal AND visibility IS veryPoor THEN speed IS slow;
+RULE 26: IF weight IS big AND visibility IS veryPoor THEN speed IS slow;
+
+RULE 27: IF weight IS small AND visibility IS poor THEN speed IS normal;
+RULE 28: IF weight IS normal AND visibility IS poor THEN speed IS slow;
+RULE 29: IF weight IS big AND visibility IS poor THEN speed IS slow;
+
+RULE 30: IF weight IS small AND visibility IS average THEN speed IS fast;
+RULE 31: IF weight IS normal AND visibility IS average THEN speed IS normal;
+RULE 32: IF weight IS big AND visibility IS average THEN speed IS normal;
+
+RULE 33: IF weight IS small AND visibility IS good THEN speed IS fast;
+RULE 34: IF weight IS normal AND visibility IS good THEN speed IS fast;
+RULE 35: IF weight IS big AND visibility IS good THEN speed IS normal;
+
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
+
+
+
+
+
+
+
+
